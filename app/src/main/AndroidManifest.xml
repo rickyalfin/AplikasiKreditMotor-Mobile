@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.project_kreditmotor_ricky_ti21">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Aplikasi Kredit Motor"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Project_KreditMotor_Ricky_TI21"
+        tools:targetApi="31">
+        <activity
+            android:name=".ContactUsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WalletActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DataPengajuanKreditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PembayaranAngsuranActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DataPembayaranAngsuranActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PengajuanKreditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotifikasiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DataKreditorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DataMotorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DataPetugasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TransaksiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
