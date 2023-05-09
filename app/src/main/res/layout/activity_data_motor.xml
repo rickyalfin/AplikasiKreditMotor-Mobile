@@ -1,54 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_margin="12dp"
-    tools:context=".DataPetugasActivity">
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    tools:context=".DataMotorActivity">
 
     <TextView
         android:id="@+id/textView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
+        android:layout_height="50dp"
         android:gravity="center"
-        android:text="Data Petugas" />
+        android:text="Data Motor" />
 
     <Button
-        android:id="@+id/btTambahPetugas"
+        android:id="@+id/btTambahMotor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="KlikbtTambahPetugas"
-        android:text="Tambah Petugas" />
+        android:layout_gravity="center"
+        android:onClick="KlikbtTambahMotor"
+        android:text="Tambah Data Motor" />
 
     <Button
-        android:id="@+id/btRefreshDataPetugas"
+        android:id="@+id/btRefreshDataMotor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="KlikRefreshDataPetugas"
+        android:onClick="KlikbtRefreshDataMotor"
         android:text="Refresh" />
 
-    <HorizontalScrollView
-        android:id="@+id/horizontalScrollView"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btnCardMotorHome"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="top" >
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="5dp"
+        app:cardUseCompatPadding="true">
 
-        <ScrollView
-            android:id="@+id/verticalScrollView"
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="top" android:orientation="vertical" >
+            android:layout_gravity="top">
 
-            <TableLayout
-                android:id="@+id/tbPetugas"
+            <ScrollView
+                android:id="@+id/verticalScrollView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="1dp"></TableLayout>
-        </ScrollView>
-    </HorizontalScrollView>
+                android:layout_height="wrap_content"
+                android:layout_gravity="top">
+
+                <TableLayout
+                    android:id="@+id/tbMotor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp">
+
+                </TableLayout>
+            </ScrollView>
+        </HorizontalScrollView>
+
+    </androidx.cardview.widget.CardView>
+
 
 </LinearLayout>

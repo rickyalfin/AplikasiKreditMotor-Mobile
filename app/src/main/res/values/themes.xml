@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Project_KreditMotor_Ricky_TI21" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Theme.Project_KreditMotor_Ricky_TI21" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/lavender</item>
         <item name="colorPrimaryVariant">@color/lavender</item>

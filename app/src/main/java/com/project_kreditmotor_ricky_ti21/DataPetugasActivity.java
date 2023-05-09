@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -82,9 +83,13 @@ public class DataPetugasActivity extends AppCompatActivity implements OnClickLis
         //Memberi ID Header Tabel
         //Textview viewHeader = new Textview(this);
         TextView viewHeaderKdPetugas = new TextView(this);
+        viewHeaderKdPetugas.setGravity(Gravity.CENTER);
         TextView viewHeaderNama = new TextView(this);
+        viewHeaderNama.setGravity(Gravity.CENTER);
         TextView viewHeaderJabatan = new TextView(this);
+        viewHeaderJabatan.setGravity(Gravity.CENTER);
         TextView viewHeaderAction = new TextView(this);
+        viewHeaderAction.setGravity(Gravity.CENTER);
 
         //Memberi Nama Kolom HEADER
         //viewHeaderId.setText("id");
@@ -142,6 +147,7 @@ public class DataPetugasActivity extends AppCompatActivity implements OnClickLis
                 // barisTabel.addView(viewId);
 
                 TextView viewKdPetugas = new TextView(this);
+                viewKdPetugas.setGravity(Gravity.CENTER);
                 viewKdPetugas.setText(kdpetugas);
                 viewKdPetugas.setPadding(5, 1, 5, 1);
                 barisTable.addView(viewKdPetugas);
