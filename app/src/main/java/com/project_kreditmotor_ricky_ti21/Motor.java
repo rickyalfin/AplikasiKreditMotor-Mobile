@@ -87,4 +87,4 @@ public class Motor extends Koneksi{
         return id;
     //return null;
         }
-        }
+}

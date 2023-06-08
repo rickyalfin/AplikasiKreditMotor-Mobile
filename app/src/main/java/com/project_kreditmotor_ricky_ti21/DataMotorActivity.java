@@ -221,7 +221,7 @@ public class DataMotorActivity extends AppCompatActivity implements OnClickListe
 
     // buat id tersembunyi di alertbuilder
     final TextView viewKdmotor = new TextView(this);
-    viewKdmotor.setText("Kode Motor ="+String.valueOf(kdmotorEdit));
+    viewKdmotor.setBackgroundColor(Color.TRANSPARENT);
     viewKdmotor.setTextColor(Color.WHITE);
     viewKdmotor.setTextSize(20);
     layoutInput.addView(viewKdmotor);
