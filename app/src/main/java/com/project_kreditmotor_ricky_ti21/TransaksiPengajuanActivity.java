@@ -4,11 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class PengajuanKreditActivity extends AppCompatActivity {
+
+public class TransaksiPengajuanActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pengajuan_kredit);
+        setContentView(R.layout.activity_transaksi_pengajuan);
+
     }
 }

@@ -28,7 +28,7 @@ switch ($operasi) {
 
         $query_insert_data = mysqli_query($koneksi, "INSERT INTO kreditor (nama, pekerjaan, telp, alamat) VALUES('$nama', '$pekerjaan','$telp', '$alamat')");
 
-        if ($query_inset_data) {
+        if ($query_insert_data) {
             echo "Data Berhasil Disimpan";
         } else {
             echo "Error Insert kreditor " . mysqli_error();

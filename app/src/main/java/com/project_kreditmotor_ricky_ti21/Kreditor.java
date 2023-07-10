@@ -54,7 +54,8 @@ public class Kreditor extends Koneksi {
     public String deleteKreditor(int idkreditor) {
         try {
             url = URL + "?operasi=delete&idkreditor=" + idkreditor;
-            System.out.println("URL Hapus Kreditor : " + url); response = call(url);
+            System.out.println("URL Hapus Kreditor : " + url);
+            response = call(url);
         } catch (Exception e) {
         }
         return response;

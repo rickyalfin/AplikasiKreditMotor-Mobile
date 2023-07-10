@@ -26,7 +26,7 @@ switch ($operasi) {
         @$jabatan = $_GET['jabatan'];
         $query_insert_data = mysqli_query($koneksi, "INSERT INTO petugas (kdpetugas, nama, jabatan) VALUES('$kdpetugas','$nama', '$jabatan')");
 
-        if ($query_inset_data) {
+        if ($query_insert_data) {
             echo "Data Berhasil Disimpan";
         } else {
             echo "Error Insert petugas " . mysqli_error();

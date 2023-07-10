@@ -34,7 +34,7 @@
             android:name=".DataPembayaranAngsuranActivity"
             android:exported="false" />
         <activity
-            android:name=".PengajuanKreditActivity"
+            android:name=".TransaksiPengajuanActivity"
             android:exported="false" />
         <activity
             android:name=".NotifikasiActivity"

@@ -21,12 +21,12 @@ public class TransaksiActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaksi);
 
-        TombolPengajuanKredit = findViewById(R.id.lyPengajuanKredit);
+        TombolPengajuanKredit = findViewById(R.id.lyTransaksiPengajuan);
 
         TombolPengajuanKredit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent open = new Intent(TransaksiActivity.this, PengajuanKreditActivity.class);
+                Intent open = new Intent(TransaksiActivity.this, TransaksiPengajuanActivity.class);
                 startActivity(open);
             }
         });

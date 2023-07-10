@@ -8,9 +8,9 @@ $koneksi = mysqli_connect($server, $username, $password, $database);
 
 @$operasi = $_GET['operasi'];
 
-switch ($operasi) {case "view":
-/* Source code untuk Menampilkan motor */
-
+switch ($operasi) {
+    case "view":
+        /* Source code untuk Menampilkan motor */
         $query_tampil_motor = mysqli_query($koneksi, "SELECT * FROM motor") or die(mysqli_error());
         $data_array = array();
         while ($data = mysqli_fetch_assoc($query_tampil_motor)) {
@@ -20,7 +20,7 @@ switch ($operasi) {case "view":
         break;
 
     case "select_by_idnama":
-/* Source code untuk Menampilkan kreditor */
+        /* Source code untuk Menampilkan kreditor */
         $query_by_idnama = mysqli_query($koneksi, "select kdmotor, nama, harga from motor order by kdmotor,nama") or die(mysqli_error());
         $data_array = array();
         while ($data = mysqli_fetch_assoc($query_by_idnama)) {
@@ -30,19 +30,21 @@ switch ($operasi) {case "view":
         break;
 
     case "insert":
-/* Source code untuk Insert data */
+        /* Source code untuk Insert data */
         @$kdmotor = $_GET['kdmotor'];
-        @$nama = $_GET['nama'];@$harga = $_GET['harga'];
+        @$nama = $_GET['nama'];
+        @$harga = $_GET['harga'];
+
         $query_insert_data = mysqli_query($koneksi, "INSERT INTO motor (kdmotor, nama, harga) VALUES('$kdmotor', '$nama', '$harga')");
         if ($query_insert_data) {
             echo "Data Berhasil Disimpan";
         } else {
-            echo "Error Inser motor " . mysqli_error();
+            echo "Error Insert motor " . mysqli_error();
         }
         break;
 
     case "get_motor_by_kdmotor":
-/* Source code untuk Edit data dan mengirim data berdasarkan kdmotor yang diminta */
+        /* Source code untuk Edit data dan mengirim data berdasarkan kdmotor yang diminta */
         @$idmotor = $_GET['idmotor'];
         $query_tampil_motor = mysqli_query($koneksi, "SELECT * FROM motor WHERE idmotor='$idmotor'") or die(mysqli_error());
         $data_array = array();
@@ -51,7 +53,7 @@ switch ($operasi) {case "view":
         break;
 
     case "select_by_kdmotorkredit":
-/* Source code untuk menampilkan berdasarkan kdmotor yang diminta */
+        /* Source code untuk menampilkan berdasarkan kdmotor yang diminta */
         @$kdmotor = $_GET['kdmotor'];
         @$idmotor = $_GET['idmotor'];
 
@@ -62,7 +64,7 @@ switch ($operasi) {case "view":
         break;
 
     case "update":
-/* Source code untuk Updatedata */
+        /* Source code untuk Updatedata */
         @$idmotor = $_GET['idmotor'];
         @$kdmotor = $_GET['kdmotor'];
         @$nama = $_GET['nama'];
@@ -76,7 +78,7 @@ switch ($operasi) {case "view":
         break;
 
     case "delete":
-/* Source code untuk Deletedata */@$idmotor = $_GET['idmotor'];
+        /* Source code untuk Deletedata */@$idmotor = $_GET['idmotor'];
         $query_delete_motor = mysqli_query($koneksi, "DELETE FROM motor WHERE idmotor='$idmotor'");
         if ($query_delete_motor) {
             echo "Delete Data Berhasil";
