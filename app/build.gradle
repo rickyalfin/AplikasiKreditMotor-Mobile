@@ -7,8 +7,8 @@ android {
 
     defaultConfig {
         applicationId "com.project_kreditmotor_ricky_ti21"
-        minSdk 21
-        targetSdk 32
+        minSdk 33
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -35,4 +35,8 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    // Dependensi lainnya
+
+    implementation 'com.itextpdf:itextpdf:5.5.13'
 }

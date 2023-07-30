@@ -8,309 +8,335 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Environment;
+import android.view.View;
 
+public class DataPengajuanKreditActivity extends AppCompatActivity implements OnClickListener {
 
-public class DataPengajuanKreditActivity extends AppCompatActivity {
+    Kredit kredit = new Kredit();
+    Server server = new Server();
 
-    Kreditor kreditor = new Kreditor();
-    Motor motor = new Motor ();
-    Kredit kredit = new Kredit ();
+    TableLayout tbQueryKredit;
 
-    Spinner SpinnerNamaKreditor,SpinnerNamaMotor;
+    Button btRefreshKredit;
 
-    EditText editUangMuka,editBunga,editLamaAngsuran;
+    ArrayList<Button> buttonPdf = new ArrayList<Button>();
+    ArrayList<Button> buttonDelete = new ArrayList<Button>();
 
-    TextView textNamaMotor,textAlamatKrditor,textNamaKreditor,textHargaMotor,textHargaKredit,textTotalKredit,textAngsuranPerbulan;
+    JSONArray arrayQueryKredit;
 
-    Button buttonProsesPengajuanKredit,buttonSimpanPengajuanKredit,buttonResetKredit;
-
-    ArrayList<String> arrayListNamaKreditor = new ArrayList<String>();
-    ArrayList<String> arrayListNamaMotor = new ArrayList<String>();
-
-    JSONArray arrayKreditor;
-    JSONArray arrayMotor;
-
-    String idkreditorspiner;
-
-    private double HargaKredit = 0.0;
-    private double TotalKredit = 0.0;
-    private double Angsuran = 0.0;
-
+    int invoice = 0; // Inisialisasi invoice dengan nilai default (misalnya 0)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_pengajuan_kredit);
 
-        if (android.os.Build.VERSION.SDK_INT > 9) { StrictMode.ThreadPolicy policy = new
-                StrictMode.ThreadPolicy.Builder()
-                .permitAll().build(); StrictMode.setThreadPolicy(policy);
+        // Penggunaan PdfUtils untuk membuat dan menyimpan PDF
+        String filePath = getExternalFilesDir(null) + "/output.pdf";
+        String content = "Ini adalah contoh teks dalam PDF.";
+        PdfUtils.createPdf(filePath, content);
+
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
         }
-        textNamaKreditor = (TextView) findViewById(R.id.TextNamaKreditor);
-        textAlamatKrditor = (TextView) findViewById(R.id.TextAlamatKreditor);
-        textNamaMotor = (TextView) findViewById(R.id.textNamaMotor);
-        textHargaMotor = (TextView) findViewById(R.id.textHargaMotor);
-        textHargaKredit = (TextView) findViewById(R.id.textHargaKredit);
-        textTotalKredit = (TextView) findViewById(R.id.textTotalKredit);
-        textAngsuranPerbulan = (TextView) findViewById(R.id.textAngsuranPerbulan);
 
-        editBunga = (EditText) findViewById(R.id.editBunga);
-        editUangMuka = (EditText) findViewById(R.id.editUangMuka);
-        editLamaAngsuran = (EditText) findViewById(R.id.editLamaAngsuran);
+        //Pemberian Nama komponen
+        tbQueryKredit = (TableLayout) findViewById(R.id.tbQueryKredit);
+        btRefreshKredit = (Button) findViewById(R.id.btRefreshKredit);
 
-        buttonProsesPengajuanKredit = (Button) findViewById(R.id.buttonProsesPengajuanKredit);
-        buttonSimpanPengajuanKredit = (Button) findViewById(R.id.buttonSimpanPengajuanKredit);
-        buttonResetKredit = (Button) findViewById(R.id.buttonResetKredit);
-
-
-
-        SpinnerNamaKreditor = (Spinner) findViewById(R.id.SpinnerNamaKreditor);
-        //SpinnerNamaKreditor.setOnItemSelectedListener(this);
-        SpinnerNamaKreditor.setOnItemSelectedListener(new OnItemSelectedListener() {
-             @Override
-             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-
-                 // TODO Auto-generated method stub
-                 getNamaKreditor();
-             }
-              @Override
-              public void onNothingSelected(AdapterView<?> arg0) {
-                 // TODO Auto-generated method stub
-
-             }
-        });
-
-        SpinnerNamaMotor = (Spinner) findViewById(R.id.SpinnerNamaMotor);
-        //SpinnerNamaMotor.setOnItemSelectedListener(this);
-        SpinnerNamaMotor.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-
-                // TODO Auto-generated method stub
-                getKdmotorKredit();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-
-        Spinerkreditor();
-        Spinermotor();
+        tampilQueryKredit();
     }
 
-    public void Spinerkreditor() {
-        try {
-            arrayKreditor = new JSONArray(kreditor.tampilKreditor());
+    //Tampil data data motor
+    public void tampilQueryKredit() {
+        TableRow barisTabel = new TableRow(this);
+        barisTabel.setBackgroundColor(Color.BLACK);
 
-            for (int i = 0; i < arrayKreditor.length(); i++) {
-                JSONObject jsonChildNode = arrayKreditor.getJSONObject(i);
+        //Memberi ID Header Tabel
+        //TextView viewHeaderId = new TextView(this);
+        TextView viewHeaderInvoice = new TextView(this);
+        TextView viewHeaderTgl = new TextView(this);
+        TextView viewHeaderIdKreditor = new TextView(this);
+        TextView viewHeaderNama = new TextView(this);
+        TextView viewHeaderAlamat = new TextView(this);
+        TextView viewHeaderKdMotor = new TextView(this);
+        TextView viewHeaderNmMotor = new TextView(this);
+        TextView viewHeaderHrgTunai = new TextView(this);
+        TextView viewHeaderDP = new TextView(this);
+        TextView viewHeaderHrgKredit = new TextView(this);
+        TextView viewHeaderBunga = new TextView(this);
+        TextView viewHeaderLama = new TextView(this);
+        TextView viewHeaderTotKredit = new TextView(this);
+        TextView viewHeaderAngsuran = new TextView(this);
+
+        //Memberi Nama kolom HEADER
+        //viewHeaderId.setText("Id");
+        viewHeaderInvoice.setText("Invoice");
+        viewHeaderTgl.setText("Tgl");
+        viewHeaderIdKreditor.setText("IdKreditor");
+        viewHeaderNama.setText("Nama");
+        viewHeaderAlamat.setText("Alamat");
+        viewHeaderKdMotor.setText("KdMotor");
+        viewHeaderNmMotor.setText("NmMotor");
+        viewHeaderHrgTunai.setText("HrgTunai");
+        viewHeaderDP.setText("DP");
+        viewHeaderHrgKredit.setText("HrgKredit");
+        viewHeaderBunga.setText("Bunga");
+        viewHeaderLama.setText("Lama");
+        viewHeaderTotKredit.setText("TotKredit");
+        viewHeaderAngsuran.setText("Angsuran");
+
+        //viewHeaderId
+        viewHeaderInvoice.setTextColor(Color.WHITE);
+        viewHeaderTgl.setTextColor(Color.WHITE);
+        viewHeaderIdKreditor.setTextColor(Color.WHITE);
+        viewHeaderNama.setTextColor(Color.WHITE);
+        viewHeaderAlamat.setTextColor(Color.WHITE);
+        viewHeaderKdMotor.setTextColor(Color.WHITE);
+        viewHeaderNmMotor.setTextColor(Color.WHITE);
+        viewHeaderHrgTunai.setTextColor(Color.WHITE);
+        viewHeaderDP.setTextColor(Color.WHITE);
+        viewHeaderHrgKredit.setTextColor(Color.WHITE);
+        viewHeaderBunga.setTextColor(Color.WHITE);
+        viewHeaderLama.setTextColor(Color.WHITE);
+        viewHeaderTotKredit.setTextColor(Color.WHITE);
+        viewHeaderAngsuran.setTextColor(Color.WHITE);
+
+
+        //viewHeaderId.setPadding(5, 1, 5, 1);
+        viewHeaderInvoice.setPadding(5, 1, 5, 1);
+        viewHeaderTgl.setPadding(5, 1, 5, 1);
+        viewHeaderIdKreditor.setPadding(5, 1, 5, 1);
+        viewHeaderNama.setPadding(5, 1, 5, 1);
+        viewHeaderAlamat.setPadding(5, 1, 5, 1);
+        viewHeaderKdMotor.setPadding(5, 1, 5, 1);
+        viewHeaderNmMotor.setPadding(5, 1, 5, 1);
+        viewHeaderHrgTunai.setPadding(5, 1, 5, 1);
+        viewHeaderDP.setPadding(5, 1, 5, 1);
+        viewHeaderHrgKredit.setPadding(5, 1, 5, 1);
+        viewHeaderBunga.setPadding(5, 1, 5, 1);
+        viewHeaderLama.setPadding(5, 1, 5, 1);
+        viewHeaderTotKredit.setPadding(5, 1, 5, 1);
+        viewHeaderAngsuran.setPadding(5, 1, 5, 1);
+
+
+        //barisTabel.addView(viewHeaderId);
+        barisTabel.addView(viewHeaderInvoice);
+        barisTabel.addView(viewHeaderTgl);
+        barisTabel.addView(viewHeaderIdKreditor);
+        barisTabel.addView(viewHeaderNama);
+        barisTabel.addView(viewHeaderAlamat);
+        barisTabel.addView(viewHeaderKdMotor);
+        barisTabel.addView(viewHeaderNmMotor);
+        barisTabel.addView(viewHeaderHrgTunai);
+        barisTabel.addView(viewHeaderDP);
+        barisTabel.addView(viewHeaderHrgKredit);
+        barisTabel.addView(viewHeaderBunga);
+        barisTabel.addView(viewHeaderLama);
+        barisTabel.addView(viewHeaderTotKredit);
+        barisTabel.addView(viewHeaderAngsuran);
+
+
+        tbQueryKredit.addView(barisTabel, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT));
+
+        try {
+            arrayQueryKredit = new JSONArray(kredit.tampil_query_kredit());
+
+            //Menampilkan Header Kolom
+            for (int i = 0; i < arrayQueryKredit.length(); i++) {
+                JSONObject jsonChildNode = arrayQueryKredit.getJSONObject(i);
                 //ambil data dari nama tabel databse
+                String invoiceValue = jsonChildNode.optString("invoice");
+                String tanggal = jsonChildNode.optString("tanggal");
                 String idkreditor = jsonChildNode.optString("idkreditor");
                 String nama = jsonChildNode.optString("nama");
-
-                System.out.println("id :" + idkreditor);
-                System.out.println("nama :" + nama);
-
-                //arrayListNamaKreditor.add(idkreditor +"-"+nama);
-                arrayListNamaKreditor.add(idkreditor);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        // membuat adapter untuk menghubungkan spinner dengan data arraylist
-        ArrayAdapter<String> adapterNamaKreditor = new ArrayAdapter<String>( this, android.R.layout.simple_spinner_item, arrayListNamaKreditor);
-
-        adapterNamaKreditor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // masukkan adapter kedalam spinner
-        SpinnerNamaKreditor.setAdapter(adapterNamaKreditor);
-        SpinnerNamaKreditor.setSelection(0);
-    }
-
-    public void Spinermotor() {
-        try {
-            arrayMotor = new JSONArray(motor.tampilMotorbyIdNama());
-
-            for (int i = 0; i < arrayMotor.length(); i++) {
-                JSONObject jsonChildNode = arrayMotor.getJSONObject(i);
-
-                //ambil data dari nama tabel databse
+                String alamat = jsonChildNode.optString("alamat");
                 String kdmotor = jsonChildNode.optString("kdmotor");
-                String nama = jsonChildNode.optString("nama");
-                String harga = jsonChildNode.optString("harga");
+                String nmotor = jsonChildNode.optString("nmotor");
+                String hrgtunai = jsonChildNode.optString("hrgtunai");
+                String dp = jsonChildNode.optString("dp");
+                String hrgkredit = jsonChildNode.optString("hrgkredit");
+                String bunga = jsonChildNode.optString("bunga");
+                String lama = jsonChildNode.optString("lama");
+                String totalkredit = jsonChildNode.optString("totalkredit");
+                String angsuran = jsonChildNode.optString("angsuran");
 
-                System.out.println("kdmotor :" + kdmotor);
-                System.out.println("nama :" + nama);
-                System.out.println("harga :" + harga);
+                // Convert String to Integer
+                invoice = Integer.parseInt(invoiceValue);
 
-                //arrayListNamaMotor.add(kdmotor +" - "+nama);
-                arrayListNamaMotor.add(kdmotor);
+                System.out.println("invoice :" + invoice);
+                //System.out.println("kdmotor :" + kdmotor);
+
+                barisTabel = new TableRow(this);
+
+                if (i % 2 == 0) {
+                    barisTabel.setBackgroundColor(Color.LTGRAY);
+                }
+
+                //TextView viewId = new TextView(this);
+                //viewId.setText(id);
+                //viewId.setPadding(5, 1, 5, 1);
+                //barisTabel.addView(viewId);
+
+                TextView viewInvoice = new TextView(this);
+                viewInvoice.setText(invoiceValue);
+                viewInvoice.setPadding(5, 1, 5, 1);
+                viewInvoice.setGravity(Gravity.CENTER);
+                barisTabel.addView(viewInvoice);
+
+                TextView viewTgl = new TextView(this);
+                viewTgl.setText(tanggal);
+                viewTgl.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewTgl);
+
+                TextView viewIdKreditor = new TextView(this);
+                viewIdKreditor.setText(idkreditor);
+                viewIdKreditor.setPadding(5, 1, 5, 1);
+                viewIdKreditor.setGravity(Gravity.CENTER);
+                barisTabel.addView(viewIdKreditor);
+
+                TextView viewviewNama = new TextView(this);
+                viewviewNama.setText(nama);
+                viewviewNama.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewviewNama);
+
+                TextView viewAlamat = new TextView(this);
+                viewAlamat.setText(alamat);
+                viewAlamat.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewAlamat);
+
+                TextView viewKdMotor = new TextView(this);
+                viewKdMotor.setText(kdmotor);
+                viewKdMotor.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewKdMotor);
+
+                TextView viewNmMotor = new TextView(this);
+                viewNmMotor.setText(nmotor);
+                viewNmMotor.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewNmMotor);
+
+                TextView viewHrgTunai = new TextView(this);
+                viewHrgTunai.setText(hrgtunai);
+                viewHrgTunai.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewHrgTunai);
+
+                TextView viewDP = new TextView(this);
+                viewDP.setText(dp);
+                viewDP.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewDP);
+
+                TextView viewHrgKredit = new TextView(this);
+                viewHrgKredit.setText(hrgkredit);
+                viewHrgKredit.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewHrgKredit);
+
+                TextView viewBunga = new TextView(this);
+                viewBunga.setText(bunga);
+                viewBunga.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewBunga);
+
+                TextView viewLama = new TextView(this);
+                viewLama.setText(lama);
+                viewLama.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewLama);
+
+                TextView viewTotKredit = new TextView(this);
+                viewTotKredit.setText(totalkredit);
+                viewTotKredit.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewTotKredit);
+
+                TextView viewAngsuran = new TextView(this);
+                viewAngsuran.setText(angsuran);
+                viewAngsuran.setPadding(5, 1, 5, 1);
+                barisTabel.addView(viewAngsuran);
+
+
+                // Membuat Button Cetak PDF pada Baris
+                buttonPdf.add(i, new Button(this));
+                buttonPdf.get(i).setId(Integer.parseInt(invoiceValue));
+                buttonPdf.get(i).setTag("PDF");
+                buttonPdf.get(i).setText("Cetak PDF");
+                buttonPdf.get(i).setOnClickListener(this);
+                barisTabel.addView(buttonPdf.get(i));
+
+                //Membuat Button Delete pada Baris
+                buttonDelete.add(i, new Button(this));
+                buttonDelete.get(i).setId(Integer.parseInt(invoiceValue));
+                buttonDelete.get(i).setTag("Delete");
+                buttonDelete.get(i).setText("Delete");
+                buttonDelete.get(i).setOnClickListener(this);
+                barisTabel.addView(buttonDelete.get(i));
+
+                tbQueryKredit.addView(barisTabel, new TableLayout.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                        TableRow.LayoutParams.MATCH_PARENT));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        // membuat adapter untuk menghubungkan spinner dengan data arraylist
-        ArrayAdapter<String> adapterNamaMotor = new ArrayAdapter<String>( this, android.R.layout.simple_spinner_item, arrayListNamaMotor);
-
-        adapterNamaMotor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // masukkan adapter kedalam spinner
-        SpinnerNamaMotor.setAdapter(adapterNamaMotor);
-        SpinnerNamaMotor.setSelection(0);
     }
 
-    public void getNamaKreditor() {
-        // TODO Auto-generated method stub
-        String idkreditor =(SpinnerNamaKreditor.getSelectedItem().toString());
-
-        String namaEdit = null;
-        String alamatEdit = null;
-
-        JSONArray arrayKreditor;
-
-        try {
-
-            arrayKreditor = new
-                    JSONArray(kreditor.getKreditorByNama(Integer.parseInt(idkreditor)));
-
-            for (int i = 0; i < arrayKreditor.length(); i++) {
-                JSONObject jsonChildNode = arrayKreditor.getJSONObject(i);
-                namaEdit = jsonChildNode.optString("nama");
-                alamatEdit = jsonChildNode.optString("alamat");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        textNamaKreditor.setText(namaEdit);
-        textAlamatKrditor.setText(alamatEdit);
-    }
-
-    public void getKdmotorKredit(){
-        String kdmotor =(SpinnerNamaMotor.getSelectedItem().toString());
-
-        String idmotorEdit = null;
-        String kdmotorEdit = null;
-        String namaEdit = null;
-        String hargaEdit = null;
-
-        JSONArray arrayKodemotor;
-
-        try {
-            arrayKodemotor = new JSONArray(motor.select_by_KdmotorKredit(kdmotor));
-
-            for (int i = 0; i < arrayKodemotor.length(); i++) {
-                JSONObject jsonChildNode = arrayKodemotor.getJSONObject(i);
-                idmotorEdit = jsonChildNode.optString("idmotor");
-                kdmotorEdit = jsonChildNode.optString("kdmotor");
-                namaEdit = jsonChildNode.optString("nama");
-                hargaEdit = jsonChildNode.optString("harga");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        textNamaMotor.setText(namaEdit);
-        textHargaMotor.setText(hargaEdit);
-
-    }
-
-    public void HitungKredit() {
-        String sharga = textHargaMotor.getText().toString();
-        String sdp = editUangMuka.getText().toString();
-        String sbunga = editBunga.getText().toString();
-        String slama = editLamaAngsuran.getText().toString();
-
-        if ((sharga.equalsIgnoreCase("")) || (sharga.equalsIgnoreCase("0")) || (sdp.equalsIgnoreCase("")) || (sdp.equalsIgnoreCase("0")) || (sbunga.equalsIgnoreCase("")) || (sbunga.equalsIgnoreCase("0")) || (slama.equalsIgnoreCase("")) || (slama.equalsIgnoreCase("0"))){
-            Toast.makeText(this, "Silahkan Lengkapi Data !", Toast.LENGTH_LONG).show();
-
-        } else {
-            double harga = Double.parseDouble(textHargaMotor.getText().toString());
-            double dp = Double.parseDouble(editUangMuka.getText().toString());
-            double bunga = Double.parseDouble(editBunga.getText().toString());
-            double lama = Double.parseDouble(editLamaAngsuran.getText().toString());
-
-            HargaKredit = harga - dp;
-            TotalKredit = HargaKredit + (HargaKredit * (bunga/100) * 12);
-
-            Angsuran = TotalKredit / lama;
-
-            String sHargaKredit = String.format("%,.2f",HargaKredit);
-            textHargaKredit.setText(sHargaKredit);
-
-            String sTotalKredit = String.format("%,.2f",TotalKredit);
-            textTotalKredit.setText(sTotalKredit);
-
-            String sAngsuran = String.format("%,.2f",Angsuran);
-            textAngsuranPerbulan.setText(sAngsuran);
-        }
-    }
-
-    public void KlikbuttonProsesPengajuanKredit(View v){ HitungKredit();
-    }
-
-    public void KlikbuttonResetKredit(View v) {
-        editUangMuka.setText("");
-        editBunga.setText("");
-        editLamaAngsuran.setText("");
-        textTotalKredit.setText("");
-        textAngsuranPerbulan.setText("");
-    }
-
-    public void KlikbuttonSimpanPengajuanKredit(View v) {
-        simpanKredit();
-    }
-
-    //Metode tambah kredit
-    public void simpanKredit() {
-        /* layout akan ditampilkan pada AlertDialog */
-        String idkreditor = SpinnerNamaKreditor.getSelectedItem().toString();
-        String kdmotor = SpinnerNamaMotor.getSelectedItem().toString();
-        String hrgtunai = textHargaMotor.getText().toString();
-        String dp = editUangMuka.getText().toString();
-        String hrgkredit = textHargaKredit.getText().toString();
-        String bunga = editBunga.getText().toString();
-        String lama = editLamaAngsuran.getText().toString();
-        String totalkredit = textTotalKredit.getText().toString();
-        String angsuran = textAngsuranPerbulan.getText().toString();
-
-        //String idkreditor = "2";
-        // String kdmotor = "SPRC125";
-
-        System.out.println("idkreditor : " + idkreditor + " kdmotor : " + kdmotor);
-
-        String laporan = kredit.simpan_kredit(idkreditor,kdmotor,hrgtunai,dp,hrgkredit,bunga,lama,totalkredit,angsuran);Toast.makeText(DataPengajuanKreditActivity.this, laporan, Toast.LENGTH_SHORT).show();
+    public void deleteKredit(int invoice) {
+        kredit.hapus_kredit(invoice);
 
         /* restart acrtivity */
         finish();
         startActivity(getIntent());
+    }
+
+    public void KlikbtRefreshKredit(View v){
+        /* restart acrtivity */ finish(); startActivity(getIntent());
+    }
+
+    @Override
+    public void onClick(View view) {
+        // TODO Auto-g1enerated method stub
+        for (int i = 0; i < buttonPdf.size(); i++) {
+
+
+            /* jika yang diklik adalah button edit */
+            if (view.getId() == buttonPdf.get(i).getId() && view.getTag().toString().trim().equals("PDF")) {
+                String fileName = "invoice_" + invoice + ".pdf";
+                String content = "Isi dari PDF yang ingin Anda cetak";
+
+                // Anda dapat mengisi dengan data yang sesuai dari aplikasi Anda.
+                // Memeriksa apakah perangkat memiliki penyimpanan eksternal yang dapat ditulisi
+                if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+                    // Memanggil metode utilitas untuk membuat PDF
+                    PdfUtils.createPdf(Environment.getExternalStorageDirectory() + "/" + fileName, content);
+                    Toast.makeText(DataPengajuanKreditActivity.this, "PDF berhasil dibuat dan disimpan di perangkat Anda.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(DataPengajuanKreditActivity.this, "Gagal membuat PDF. Perangkat tidak memiliki penyimpanan eksternal yang dapat ditulisi.", Toast.LENGTH_LONG).show();
+                }
+
+            } /* jika yang diklik adalah button delete */
+            else if (view.getId() == buttonDelete.get(i).getId() && view.getTag().toString().trim().equals("Delete")) {
+                int invoice = buttonDelete.get(i).getId();
+                deleteKredit(invoice);
+
+            }
+        }
     }
 }
