@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.project_kreditmotor_ricky_ti21"
-        minSdk 33
+        minSdk 23
         targetSdk 33
         versionCode 1
         versionName "1.0"

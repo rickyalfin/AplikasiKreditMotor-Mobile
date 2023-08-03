@@ -52,11 +52,6 @@ public class DataPengajuanKreditActivity extends AppCompatActivity implements On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_pengajuan_kredit);
 
-        // Penggunaan PdfUtils untuk membuat dan menyimpan PDF
-        String filePath = getExternalFilesDir(null) + "/output.pdf";
-        String content = "Ini adalah contoh teks dalam PDF.";
-        PdfUtils.createPdf(filePath, content);
-
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -318,19 +313,45 @@ public class DataPengajuanKreditActivity extends AppCompatActivity implements On
 
             /* jika yang diklik adalah button edit */
             if (view.getId() == buttonPdf.get(i).getId() && view.getTag().toString().trim().equals("PDF")) {
-                String fileName = "invoice_" + invoice + ".pdf";
-                String content = "Isi dari PDF yang ingin Anda cetak";
+                // Penggunaan PdfUtils untuk membuat dan menyimpan PDF
+                String filePath = getExternalFilesDir(null) + "/invoice.pdf";
 
-                // Anda dapat mengisi dengan data yang sesuai dari aplikasi Anda.
-                // Memeriksa apakah perangkat memiliki penyimpanan eksternal yang dapat ditulisi
+
+                // Format data sebagai array untuk digunakan dalam tabel
+                String[] headers = {"Invoice", "Tanggal", "ID Kreditor", "Nama", "Alamat", "Kode Motor", "Nama Motor", "Harga Tunai", "DP", "Harga Kredit", "Bunga", "Lama Kredit", "Total Kredit", "Angsuran"};
+                // Persiapkan data tabel (asumsikan Anda memiliki semua data yang tersedia)
+                String[][] tableData = new String[arrayQueryKredit.length()][headers.length];
+
+                for (i = 0; i < arrayQueryKredit.length(); i++) {
+                    JSONObject jsonChildNode = null;
+                    try {
+                        jsonChildNode = arrayQueryKredit.getJSONObject(i);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    tableData[i][0] = jsonChildNode.optString("invoice");
+                    tableData[i][1] = jsonChildNode.optString("tanggal");
+                    tableData[i][2] = jsonChildNode.optString("idkreditor");
+                    tableData[i][3] = jsonChildNode.optString("nama");
+                    tableData[i][4] = jsonChildNode.optString("alamat");
+                    tableData[i][5] = jsonChildNode.optString("kdmotor");
+                    tableData[i][6] = jsonChildNode.optString("nmotor");
+                    tableData[i][7] = jsonChildNode.optString("hrgtunai");
+                    tableData[i][8] = jsonChildNode.optString("dp");
+                    tableData[i][9] = jsonChildNode.optString("hrgkredit");
+                    tableData[i][10] = jsonChildNode.optString("bunga");
+                    tableData[i][11] = jsonChildNode.optString("lama");
+                    tableData[i][12] = jsonChildNode.optString("totalkredit");
+                    tableData[i][13] = jsonChildNode.optString("angsuran");
+                }
+
+                PdfUtils.createPdf(filePath, headers, tableData);
+
                 if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-                    // Memanggil metode utilitas untuk membuat PDF
-                    PdfUtils.createPdf(Environment.getExternalStorageDirectory() + "/" + fileName, content);
                     Toast.makeText(DataPengajuanKreditActivity.this, "PDF berhasil dibuat dan disimpan di perangkat Anda.", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(DataPengajuanKreditActivity.this, "Gagal membuat PDF. Perangkat tidak memiliki penyimpanan eksternal yang dapat ditulisi.", Toast.LENGTH_LONG).show();
                 }
-
             } /* jika yang diklik adalah button delete */
             else if (view.getId() == buttonDelete.get(i).getId() && view.getTag().toString().trim().equals("Delete")) {
                 int invoice = buttonDelete.get(i).getId();
